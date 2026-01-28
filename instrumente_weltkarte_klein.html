@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instrumente aus aller Welt</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Sans MS', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFE66D 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: white;
+            font-size: 3em;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+        
+        .instruction {
+            color: white;
+            font-size: 1.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            border-radius: 15px;
+        }
+        
+        .instruments-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .instrument {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            padding: 20px;
+            border-radius: 15px;
+            background: #F8F9FA;
+        }
+        
+        .instrument:hover {
+            transform: scale(1.05);
+            background: #E9ECEF;
+        }
+        
+        .instrument-image {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+        
+        .instrument-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        
+        .instrument-country {
+            font-size: 1em;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        /* Pop-up Overlay */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .popup-overlay.active {
+            display: flex;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .instrument-popup {
+            background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 100%);
+            border-radius: 25px;
+            padding: 50px;
+            max-width: 700px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+            animation: popIn 0.4s ease;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 2em;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-button:hover {
+            background: #E63946;
+            transform: scale(1.1);
+        }
+        
+        .popup-image {
+            width: 250px;
+            height: 250px;
+            object-fit: contain;
+            margin: 0 auto 20px;
+        }
+        
+        .popup-title {
+            font-size: 3em;
+            font-weight: bold;
+            color: #E63946;
+            margin-bottom: 10px;
+        }
+        
+        .popup-country {
+            font-size: 2em;
+            color: #457B9D;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .popup-description {
+            font-size: 1.4em;
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .audio-button {
+            margin: 20px auto;
+            padding: 20px 50px;
+            font-size: 1.8em;
+            font-weight: bold;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .audio-button:hover {
+            background: #45a049;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+        
+        .audio-button:active {
+            transform: translateY(0);
+        }
+        
+        .try-it {
+            font-size: 1.8em;
+            color: #E63946;
+            font-weight: bold;
+            margin-top: 20px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 Instrumente aus aller Welt! 🎶</h1>
+    <div class="instruction">Klicke auf ein Instrument und höre, wie es klingt!</div>
+    
+    <div class="instruments-container">
+        <div class="instrument" onclick="showInstrument('djembe')">
+            <img src="data:image/png;base64,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" class="instrument-image" alt="Djembe">
+            <div class="instrument-name">Djembe</div>
+            <div class="instrument-country">Westafrika</div>
+        </div>
+        
+        <div class="instrument" onclick="showInstrument('didgeridoo')">
+            <img src="data:image/png;base64,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" class="instrument-image" alt="Didgeridoo">
+            <div class="instrument-name">Didgeridoo</div>
+            <div class="instrument-country">Australien</div>
+        </div>
+        
+        <div class="instrument" onclick="showInstrument('flamenco')">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAGQCAIAAACbF8osAAAL/klEQVR4nO3dMZIbVR7H8QdFRhXJOt6AooicOnLicrHmJtQeYIk4wvoE3GEPsAvl8iEcURQnWAigSPEGvTya7pasmZH6916/zycaCyT1qPvb/ydpRvPe27dvC5DzfnoDYHQihDARQpgIIUyEECZCCBMhhIkQwkQIYSKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUKYCCFMhBAmQggTIYSJEMJECGEihDARQpgIIUyEEPZBegMopZQvPvs4dddff/tD6q6ZmIQQJkIIsxxty6fv/7zPHX3320f73BHvZBJCmAghTIQQJkIIEyGEiRDCRNiiJ1/9K3I5ESKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUKYCCFMhBAmQggTIYSJEMJECGEihDARQpgIIUyEECZCCBMhhIkQwkQIYSKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUKYCCFMhBAmQggTIYSJEMJECGEihDARQpgIIUyEECZCCBMhhIkQwkQIYSKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUKYCCFMhBAmQggTYd7LF4+GvXdKKR+kN2BQTR368435x3/+G9ySMYlwP02Fd4og92c5uoeXLx6dKfD5s8d7bszl935+s7kWk/CGmg1vYb4xr16/WfzX+l0YjDciwps4lV9T7W2qW3iqRilenQivqd/21k7VaDBenQivYzO/HttbO1+jFB/OCzNXsC7w+bPHxyhwbvOb8srNw5mED7KZX2RLdjN9g/OpaCQ+kAjvacD85qR4RZaj97Eo8JCLz0usv3Gr03swCe9mnV9qS9qxmIpG4l2ZhHegwDOMxHsT4aXmR9Ww68/zFg+LDi9kOfpuBuCdPH/22NL0TkT4DosBeOu7++63j0opT37/YuGKl9/U+lmiDs+wHD1n5wIPxtL0QiI8SYEPp8NLWI5u27nAvz//6/yfv6wu2efyW1g8RbQuXTMJN5iB12UenifCJQXegg7PEOGfKPB2dHiKCP+gwFvT4SYRblDg7Xhs10T4f/XE7Ci5tfoIG4YTEZbiaMjxyBcRFk8FEzw5nBPhHxS4J492NXqETsMtGHwvjB5h5cS8P4/5ZOgIvSIa55XSMniE0IJxIzQGG2EYjhshNGLQCIc96TZuzP0yaISVtWgLBt8Lo0cIcSN+vEXXL8ms/3ZnKeXJ0+Xl3X1r9VMwBvwIjBEj7Mu8ridP73atGmd3TQ5FhI3anHillC+/+XF94euvlpf/829/2bw1NTZIhM159frNfOLN63r91aU3Ml2rxlmbrBOSdoiwIfPptznx7q3e2rxGU7ERw7062uarMq9ev6kFXje/hS+/+bHe/vxOWzDsj86YhGG3m37nffnNj9NU9MpNnAiT9pl+p8yfLlqdBg23HG1HtsBqvjoNbsbITMKM6YjP5lfVkWgeRpiEAU0VWE3bYx7uT4R7a7PAiQ4jRAhhItxVy2NwYhjuT4T7ab/AiQ53JkIIGy7C+rtqzvStqXtktN8nHC7ClF7WohMr0j2JEMJECGEihLARI/TaTIOGfVWmjBkhNGX0CA3DFgy+FwaNcP81z/QrQosPQWvWtJ37/1rTgGvRMmyE0I5xI/TyTCNGfklmMmiEL1882v8jvXpZkabWopGd0oIRI1zv6d2GYfsd7lzg+pEfsMOxIlycaz//5MP6tUXp/uaP+XxfjDYSB4pwsV+nvT7f9/toeRimFqKb+2KcDoeIcD0AN9sbfFEaX4iW1a4ZZCQeP8LNAXjqkv07bCHFuhmRAs/vkTLASDx4hJcMwJJYlJbZEZ/tsN575BNHz+yRxUjca4sCDhvhmddgNtX/Yc9XaOYd7p/i/E73LLA+wpfvlHLopekxI7xwAJ6yc4eRFOf5RQq80Agj8YAR3mkAzgXfsVikeLs7Wky/nZeg558KnnHsDo8W4b0LXF9l/3cO11PxWkGub23/Z4D3LnB9lYN1eKg/CPPAAusV//39r9PXkT+Q8vzZ419m/7xfh/Vai6tP384vG9e4rQcWWK9Yd83LF48O87Omx4nwKgXWq2c7LLNJtRjIp5o832r2by1dpcB69eN1eJAIr1hgvZF4h5P5XV8+werEi/+psysWWG/kYB0eIcKrF1hvqpEO5zY3o4XYNl29wHpTR+qw+xdmblTg+gb9hPdd3ajA9Q32/jpN3xHetMD1zb56/UaKl1g8UDvsmq477DjCHQqsN24kXm6R3613Tf263w57jXC3AjfvxUjctM8AXDhAh71GWO35s9eL+9Lh3OLRCO6X7nQZYT3h7f/or5emUlwPwMh+mb7ocRj2F2GwwGo9EsdMcf2Nt7BTuuuws/cJ23l8p11e360qv6/H2ny/7urWJ52m1oR9vXnYWYRVI7t8wBRbzm/+Jn5HelqOtrAQ3bTenkMuUDe/qWb3RTuLpnfqZhI2/piuR2KZDY2uB+Ops0lr+a31sijtJsKq5X1ft+0ANfbbXneL0j4ibHwMrm0OxtJDjWdW0e3nt9bFMOwjwqqv4+DUYCx/PtbjQZ5/+trXYz7paxh2EGF3Y3Dt1GCcLBrYp8lLXjfqMb+19odhBxFWvR8T8+0/c55+9frNk6dXK3MztidPT/7/vT/IVUfDsPUIDzAGN10YZDW1tI5zcubyu27MITU+DFuPsDrwgXLXIK9+p0fVyzDsJsJBTG38tIrk3gfTZmw/3e+2uI2mI2z2R2T2dyrOyZnLB1eHYcsr0p5+bA0OSYQQ1m6ER31dlJRmj6h2I6w8IeQh2j9+OogQjk2EECZCCGs0Qu8QckWN/7p9oxHCOEQIYSKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUJYoxHWz+Tp4iPraFw9itr8rKdGI4RxiBDCRAhhHUToaSEP0f7x026EbT6Hpl/NHlHtRgiDECGENR2hdwt5oMbfIZw0HSGMoJsIDUPuqpdjpvUIW15F0IvGj6LWI5zr5cRGCzo6WjqIsPHTGI1r//jpIMK5jk5vBPV1nPQRYfsnM9rUxZHTR4RzfZ3k2F93R0g3EXZxSqMpvRwz3URY/AANF+jiR2QWeopwToesdXpUdBZhR6c3gvo6TjqLsFiUckKPC9FJfxEWHbLSb4Gl0wjndEjvx0CvEc5PeL3vAx5ivvd7HIOl3wiLDjlEgaXrCIsOx3aMAkvvERYdjuowBZYDRFh0OJ4jFViOEWHR4UgOVmA5TIRFh2M4XoHlSBEWHR7dIQssB4uw6PC4jlpgOV6ERYdHdOACyyEjLKsOpdivxe47XoGllA/SG3Ar0956+eLR9M9/f//r5598GN0i7uzw+U2OOQkrI7FTIwzA6uARltX+02H7Fvvo2AWWAy9H59ZL01KK1WmDRstvcvxJWBmJjRuzwDLIJKyMxDYNm99koElYrUeiqZiyfvBHK7CMNgmrxUgspuLu1ie+AfObDBrhRIoR8lsYOsKJFHcjv00jPifctD4aPFe8os0HU4ETk/AP9ZhYT8ViMN7L5llMewsi3LBeoBZr1DuS3+Xee/v2bXobmjZP8bvfPgpuSXc+ff/n+rX8zhDhRaYURXgnU4TyeycR3sEXn32c3oSefP3tD+lN6INXRyFMhBAmQggTIYSJEMJECGEihDARQpg36yHMJIQwEUKYCCFMhBAmQggTIYSJEMJECGEihDARQpgIIUyEECZCCBMhhIkQwkQIYSKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUKYCCFMhBAmQggTIYSJEMJECGEihDARQpgIIUyEECZCCBMhhIkQwkQIYSKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUKYCCFMhBAmQggTIYSJEMJECGEihDARQpgIIUyEECZCCBMhhIkQwkQIYSKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUKYCCFMhBAmQggTIYSJEMJECGEihDARQpgIIUyEECZCCBMhhIkQwkQIYSKEMBFCmAghTIQQJkIIEyGEiRDCRAhhIoQwEUKYCCFMhBAmQggTIYSJEMJECGEihDARQpgIIUyEECZCCBMhhIkQwkQIYSKEMBFCmAghTIQQJkIIEyGE/Q8pMMYH4BcZEgAAAABJRU5ErkJggg==" class="instrument-image" alt="Flamenco-Gitarre">
+            <div class="instrument-name">Flamenco-Gitarre</div>
+            <div class="instrument-country">Spanien</div>
+        </div>
+        
+        <div class="instrument" onclick="showInstrument('taiko')">
+            <img src="data:image/png;base64,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" class="instrument-image" alt="Taiko">
+            <div class="instrument-name">Taiko</div>
+            <div class="instrument-country">Japan</div>
+        </div>
+        
+        <div class="instrument" onclick="showInstrument('balalaika')">
+            <img src="data:image/png;base64,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" class="instrument-image" alt="Balalaika">
+            <div class="instrument-name">Balalaika</div>
+            <div class="instrument-country">Russland</div>
+        </div>
+        
+        <div class="instrument" onclick="showInstrument('steeldrum')">
+            <img src="data:image/png;base64,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" class="instrument-image" alt="Steeldrum">
+            <div class="instrument-name">Steeldrum</div>
+            <div class="instrument-country">Karibik</div>
+        </div>
+        
+        <div class="instrument" onclick="showInstrument('akkordeon')">
+            <img src="data:image/png;base64,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" class="instrument-image" alt="Akkordeon">
+            <div class="instrument-name">Akkordeon</div>
+            <div class="instrument-country">Italien</div>
+        </div>
+        
+        <div class="instrument" onclick="showInstrument('alphorn')">
+            <img src="data:image/png;base64,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" class="instrument-image" alt="Alphorn">
+            <div class="instrument-name">Alphorn</div>
+            <div class="instrument-country">Schweiz</div>
+        </div>
+    </div>
+    
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup(event)">
+        <div class="instrument-popup" id="instrumentPopup" onclick="event.stopPropagation()">
+            <button class="close-button" onclick="closePopup()">×</button>
+            <div id="popupContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        let currentAudio = null;
+        
+        const instruments = {
+            djembe: {
+                name: "Djembe",
+                country: "Westafrika",
+                description: "Die Djembe ist eine Handtrommel aus Westafrika. Sie wird mit den Händen gespielt und hat einen sehr kraftvollen, tiefen Klang. In Mali, Senegal und Guinea wird sie bei Festen und Feiern gespielt.",
+                audioFile: "audio/djembe.mp3",
+                image: "data:image/png;base64,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"
+            },
+            didgeridoo: {
+                name: "Didgeridoo",
+                country: "Australien",
+                description: "Das Didgeridoo ist ein langes Blasinstrument der australischen Ureinwohner. Es wird aus einem ausgehöhlten Baumstamm gemacht und klingt sehr tief und brummend. Man pustet hinein und bewegt die Lippen!",
+                audioFile: "audio/didgeridoo.mp3",
+                image: "data:image/png;base64,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"
+            },
+            flamenco: {
+                name: "Flamenco-Gitarre",
+                country: "Spanien",
+                description: "Die Flamenco-Gitarre kommt aus Spanien und klingt sehr lebhaft und leidenschaftlich. Flamenco-Musiker spielen schnell und mit viel Gefühl. Oft wird dazu getanzt und geklatscht!",
+                audioFile: "audio/flamenco.mp3",
+                image: "data:image/png;base64,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"
+            },
+            taiko: {
+                name: "Taiko",
+                country: "Japan",
+                description: "Taiko sind große japanische Trommeln, die sehr laut und kraftvoll klingen. Man schlägt sie mit dicken Holzstöcken. In Japan gibt es ganze Trommel-Gruppen, die gemeinsam Taiko spielen!",
+                audioFile: "audio/taiko.mp3",
+                image: "data:image/png;base64,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"
+            },
+            balalaika: {
+                name: "Balalaika",
+                country: "Russland",
+                description: "Die Balalaika ist ein russisches Saiteninstrument mit drei Saiten. Sie hat eine besondere dreieckige Form. Man zupft die Saiten mit den Fingern und sie klingt hell und fröhlich.",
+                audioFile: "audio/balalaika.mp3",
+                image: "data:image/png;base64,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"
+            },
+            steeldrum: {
+                name: "Steeldrum",
+                country: "Karibik (Trinidad & Tobago)",
+                description: "Steeldrums werden aus alten Ölfässern gemacht! Sie kommen von der Karibikinsel Trinidad und klingen fröhlich und sonnig. Man schlägt mit Schlägeln auf verschiedene Bereiche der Trommel.",
+                audioFile: "audio/steeldrum.mp3",
+                image: "data:image/png;base64,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"
+            },
+            akkordeon: {
+                name: "Akkordeon",
+                country: "Italien",
+                description: "Das Akkordeon ist ein Instrument mit Tasten und einem Balg zum Auseinanderziehen. Es kommt aus Italien und wird oft bei Volksfesten gespielt. Man drückt Tasten und zieht gleichzeitig den Balg!",
+                audioFile: "audio/akkordeon.mp3",
+                image: "data:image/png;base64,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"
+            },
+            alphorn: {
+                name: "Alphorn",
+                country: "Schweiz",
+                description: "Das Alphorn ist ein sehr langes Holzblasinstrument aus der Schweiz. Es ist mehrere Meter lang! Hirten in den Bergen spielten es früher, um sich gegenseitig Nachrichten zu senden. Es klingt laut und majestätisch.",
+                audioFile: "audio/alphorn.mp3",
+                image: "data:image/png;base64,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"
+            }
+        };
+        
+        function playAudio(instrument) {
+            const data = instruments[instrument];
+            
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            
+            currentAudio = new Audio(data.audioFile);
+            currentAudio.play().catch(error => {
+                console.log('Audio konnte nicht abgespielt werden:', error);
+            });
+        }
+        
+        function showInstrument(instrument) {
+            const popupContent = document.getElementById('popupContent');
+            const data = instruments[instrument];
+            
+            popupContent.innerHTML = `
+                <img src="${data.image}" class="popup-image" alt="${data.name}">
+                <div class="popup-title">${data.name}</div>
+                <div class="popup-country">${data.country}</div>
+                <div class="popup-description">${data.description}</div>
+                <button class="audio-button" onclick="playAudio('${instrument}')">🔊 Instrument hören</button>
+                <div class="try-it">✨ Höre genau zu! ✨</div>
+            `;
+            
+            document.getElementById('popupOverlay').classList.add('active');
+            playAudio(instrument);
+        }
+        
+        function closePopup(event) {
+            if (event && event.target.id !== 'popupOverlay') {
+                return;
+            }
+            document.getElementById('popupOverlay').classList.remove('active');
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+        }
+    </script>
+</body>
+</html>
